@@ -8,3 +8,31 @@ output: github_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+```{r problem1}
+
+library(tidyverse)
+
+library(p8105.datasets)
+data("instacart")
+
+
+```
+The dataset `Instacart` contains `r nrow(instacart)` observations and `r ncol(instacart)` variables. Variables describe details of the order and of the products ordered.
+
+```{r problem1-cont}
+
+#How many aisles are there, and which aisles are the most items ordered from?
+
+instacart %>%
+  group_by(aisle_id, aisle) %>%
+  summarize(count = n()) %>%
+  arrange(desc(count))
+
+#There are 134 aisles, we know that from the output of the summarize code above, which returned 134 distinct rows corresponding to each aisle in the dataset. The aisle number 83 (fresh vegetables) is the one with the highest number of ordered items with 150609 ordered items, followed by aisle 24 (fresh fruit), which has 150473 ordered items. 
+
+#Make a plot that shows the number of items ordered in each aisle, limiting this to aisles with more than 10000 items ordered. Arrange aisles sensibly, and organize your plot so others can read it.
+
+
+
+```
