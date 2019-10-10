@@ -7,14 +7,14 @@ Carolina Q Cardoso
 library(tidyverse)
 ```
 
-    ## ── Attaching packages ──────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
+    ## ── Attaching packages ─────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
 
     ## ✔ ggplot2 3.2.1     ✔ purrr   0.3.2
     ## ✔ tibble  2.1.3     ✔ dplyr   0.8.3
     ## ✔ tidyr   0.8.3     ✔ stringr 1.4.0
     ## ✔ readr   1.3.1     ✔ forcats 0.4.0
 
-    ## ── Conflicts ─────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ── Conflicts ────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
     ## ✖ dplyr::filter() masks stats::filter()
     ## ✖ dplyr::lag()    masks stats::lag()
 
@@ -67,18 +67,23 @@ product_count = instacart %>%
   group_by(aisle, product_name) %>%
   summarize (count = n()) %>%
   filter(aisle == "baking ingredients" | aisle == "dog food care" | aisle == "packaged vegetables fruits") %>%
-  mutate (count = min_rank(desc(count))) %>%
-  filter (count <= 3) 
+  mutate (rank = min_rank(desc(count))) %>%
+  filter (rank <= 3) %>%
+  select(-rank)
 
-product_table <- spread(product_count,count,product_name) %>% 
-knitr::kable(col.names = c("Aisle", "1º Item", "2nd Item", "3rd Item")) %>% 
+product_table <- spread(product_count,product_name,count) %>% 
+knitr::kable() %>% 
     print()
 ```
 
     ## 
     ## 
-    ## Aisle                        1º Item                                         2nd Item                              3rd Item            
-    ## ---------------------------  ----------------------------------------------  ------------------------------------  --------------------
-    ## baking ingredients           Light Brown Sugar                               Pure Baking Soda                      Cane Sugar          
-    ## dog food care                Snack Sticks Chicken & Rice Recipe Dog Treats   Organix Chicken & Brown Rice Recipe   Small Dog Biscuits  
-    ## packaged vegetables fruits   Organic Baby Spinach                            Organic Raspberries                   Organic Blueberries
+    ## aisle                         Cane Sugar   Light Brown Sugar   Organic Baby Spinach   Organic Blueberries   Organic Raspberries   Organix Chicken & Brown Rice Recipe   Pure Baking Soda   Small Dog Biscuits   Snack Sticks Chicken & Rice Recipe Dog Treats
+    ## ---------------------------  -----------  ------------------  ---------------------  --------------------  --------------------  ------------------------------------  -----------------  -------------------  ----------------------------------------------
+    ## baking ingredients                   336                 499                     NA                    NA                    NA                                    NA                387                   NA                                              NA
+    ## dog food care                         NA                  NA                     NA                    NA                    NA                                    28                 NA                   26                                              30
+    ## packaged vegetables fruits            NA                  NA                   9784                  4966                  5546                                    NA                 NA                   NA                                              NA
+
+``` r
+#Make a table showing the mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are ordered on each day of the week; format this table for human readers (i.e. produce a 2 x 7 table)
+```
