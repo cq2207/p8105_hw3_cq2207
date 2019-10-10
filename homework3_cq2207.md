@@ -7,14 +7,14 @@ Carolina Q Cardoso
 library(tidyverse)
 ```
 
-    ## ── Attaching packages ──────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
+    ## ── Attaching packages ─────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
 
     ## ✔ ggplot2 3.2.1     ✔ purrr   0.3.2
     ## ✔ tibble  2.1.3     ✔ dplyr   0.8.3
     ## ✔ tidyr   1.0.0     ✔ stringr 1.4.0
     ## ✔ readr   1.3.1     ✔ forcats 0.4.0
 
-    ## ── Conflicts ─────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ── Conflicts ────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
     ## ✖ dplyr::filter() masks stats::filter()
     ## ✖ dplyr::lag()    masks stats::lag()
 
@@ -110,3 +110,34 @@ apple_coffee = instacart %>%
     ## -----------------  ---------  ---------  ---------  ---------  ---------  ---------  ---------
     ## Coffee Ice Cream    13.77419   14.31579   15.38095   15.31818   15.21739   12.26316   13.83333
     ## Pink Lady Apples    13.44118   11.36000   11.70213   14.25000   11.55172   12.78431   11.93750
+
+``` r
+data("brfss_smart2010")
+
+brfss_new = brfss_smart2010 %>% 
+    janitor::clean_names() %>%
+    mutate_all(tolower) %>%
+    filter (question == "how is your general health?") %>%
+    mutate(response = factor(response, labels = c("poor","fair","good","very good","excellent")))
+    
+ #In 2002, which states were observed at 7 or more locations? What about in 2010?
+
+brfss_2002 = brfss_new %>%
+    group_by(year, locationabbr) %>%
+    summarize(n = n_distinct(geo_location)) %>%
+    filter (n > 6, year == '2002')
+
+#In 2002, the states observed in 7 or more locations were CT, FL, MA, NC, NJ, PA
+
+brfss_2010 = brfss_new %>%
+    group_by(year, locationabbr) %>%
+    summarize(n = n_distinct(geo_location)) %>%
+    filter (n > 6, year == '2010')
+    
+ #In 2010, the states observed in 7 or more locations were CA, CO, FL, MA, MD, NC, NE, NJ, NY, OH, PA, SC, TX, WA 
+```
+
+In 2002, there were 6 states that were observed in 7 or more locations:
+ct, fl, ma, nc, nj, and pa. In 2010, there were 14 states that were
+observed in 7 or more locations: ca, co, fl, ma, md, nc, ne, nj, ny, oh,
+pa, sc, tx, and wa.

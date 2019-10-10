@@ -78,3 +78,40 @@ apple_coffee = instacart %>%
     print()
 
 ```
+
+
+```{r problem2}
+
+data("brfss_smart2010")
+
+brfss_new = brfss_smart2010 %>% 
+    janitor::clean_names() %>%
+    mutate_all(tolower) %>%
+    filter (question == "how is your general health?") %>%
+    mutate(response = factor(response, labels = c("poor","fair","good","very good","excellent")))
+    
+ #In 2002, which states were observed at 7 or more locations? What about in 2010?
+
+brfss_2002 = brfss_new %>%
+    group_by(year, locationabbr) %>%
+    summarize(n = n_distinct(geo_location)) %>%
+    filter (n > 6, year == '2002')
+
+#In 2002, the states observed in 7 or more locations were CT, FL, MA, NC, NJ, PA
+
+brfss_2010 = brfss_new %>%
+    group_by(year, locationabbr) %>%
+    summarize(n = n_distinct(geo_location)) %>%
+    filter (n > 6, year == '2010')
+    
+ #In 2010, the states observed in 7 or more locations were CA, CO, FL, MA, MD, NC, NE, NJ, NY, OH, PA, SC, TX, WA 
+
+```
+
+In 2002, there were `r nrow(brfss_2002)` states that were observed in 7 or more locations: `r pull(brfss_2002[1,2])`, `r pull(brfss_2002[2,2])`, `r pull(brfss_2002[3,2])`, `r pull(brfss_2002[4,2])`, `r pull(brfss_2002[5,2])`, and `r pull(brfss_2002[6,2])`.
+In 2010, there were `r nrow(brfss_2010)` states that were observed in 7 or more locations: `r pull(brfss_2010[1,2])`, `r pull(brfss_2010[2,2])`, `r pull(brfss_2010[3,2])`, `r pull(brfss_2010[4,2])`, `r pull(brfss_2010[5,2])`, `r pull(brfss_2010[6,2])`, `r pull(brfss_2010[7,2])`, `r pull(brfss_2010[8,2])`, `r pull(brfss_2010[9,2])`, `r pull(brfss_2010[10,2])`, `r pull(brfss_2010[11,2])`, `r pull(brfss_2010[12,2])`, `r pull(brfss_2010[13,2])`, and `r pull(brfss_2010[14,2])`.
+
+```{r}
+
+```
+
