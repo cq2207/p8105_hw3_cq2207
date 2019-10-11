@@ -170,3 +170,23 @@ brfss_excellent %>%
     ## Warning: Removed 2 rows containing missing values (geom_path).
 
 ![](homework3_cq2207_files/figure-gfm/problem2_cont-1.png)<!-- -->
+
+``` r
+#Make a two-panel plot showing, for the years 2006, and 2010, distribution of data_value for responses (“Poor” to “Excellent”) among locations in NY State.
+
+brfss_two = brfss_new %>%
+    transform(data_value = as.numeric(data_value)) %>%
+    filter(locationabbr == 'ny',year == '2006' | year == '2010') %>%
+    select(locationabbr, year, response, data_value)
+
+brfss_two %>%
+    ggplot(aes(x = response, y = data_value, color = response)) + 
+    geom_boxplot() + 
+    facet_grid(. ~ year) + 
+    labs(
+    title = "Distribution of Data Values per Response in NY State",
+    x = "Response",
+    y = "Data Value")
+```
+
+![](homework3_cq2207_files/figure-gfm/problem2_cont-2.png)<!-- -->
