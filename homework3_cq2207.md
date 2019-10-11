@@ -7,18 +7,21 @@ Carolina Q Cardoso
 library(tidyverse)
 ```
 
-    ## ── Attaching packages ─────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
+    ## ── Attaching packages ──────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
 
     ## ✔ ggplot2 3.2.1     ✔ purrr   0.3.2
     ## ✔ tibble  2.1.3     ✔ dplyr   0.8.3
     ## ✔ tidyr   1.0.0     ✔ stringr 1.4.0
     ## ✔ readr   1.3.1     ✔ forcats 0.4.0
 
-    ## ── Conflicts ────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ── Conflicts ─────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
     ## ✖ dplyr::filter() masks stats::filter()
     ## ✖ dplyr::lag()    masks stats::lag()
 
 ``` r
+library(dplyr)
+library(ggplot2)
+
 library(p8105.datasets)
 data("instacart")
 ```
@@ -140,4 +143,30 @@ brfss_2010 = brfss_new %>%
 In 2002, there were 6 states that were observed in 7 or more locations:
 ct, fl, ma, nc, nj, and pa. In 2010, there were 14 states that were
 observed in 7 or more locations: ca, co, fl, ma, md, nc, ne, nj, ny, oh,
-pa, sc, tx, and wa.
+pa, sc, tx, and
+wa.
+
+``` r
+#Construct a dataset that is limited to Excellent responses, and contains, year, state, and a variable that averages the data_value across locations within a state. Make a “spaghetti” plot of this average value over time within a state (that is, make a plot showing a line for each state across years – the geom_line geometry and group aesthetic will help).
+
+brfss_excellent = brfss_new %>%
+  transform(data_value = as.numeric(data_value))%>%
+    filter (response == 'excellent') %>%
+    group_by(locationabbr, year, response) %>%
+    summarize(mean_data = mean(data_value))
+
+brfss_excellent %>% 
+    ggplot(aes(x = year, y = mean_data, group = locationabbr, color = locationabbr)) + 
+    geom_point() + geom_line() +
+    labs(
+    title = "Average value over time by state",
+    x = "Year",
+    y = "Average Data Value"
+  )
+```
+
+    ## Warning: Removed 6 rows containing missing values (geom_point).
+
+    ## Warning: Removed 2 rows containing missing values (geom_path).
+
+![](homework3_cq2207_files/figure-gfm/problem2_cont-1.png)<!-- -->

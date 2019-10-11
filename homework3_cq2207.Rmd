@@ -12,6 +12,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r problem1}
 
 library(tidyverse)
+library(dplyr)
+library(ggplot2)
 
 library(p8105.datasets)
 data("instacart")
@@ -111,7 +113,24 @@ brfss_2010 = brfss_new %>%
 In 2002, there were `r nrow(brfss_2002)` states that were observed in 7 or more locations: `r pull(brfss_2002[1,2])`, `r pull(brfss_2002[2,2])`, `r pull(brfss_2002[3,2])`, `r pull(brfss_2002[4,2])`, `r pull(brfss_2002[5,2])`, and `r pull(brfss_2002[6,2])`.
 In 2010, there were `r nrow(brfss_2010)` states that were observed in 7 or more locations: `r pull(brfss_2010[1,2])`, `r pull(brfss_2010[2,2])`, `r pull(brfss_2010[3,2])`, `r pull(brfss_2010[4,2])`, `r pull(brfss_2010[5,2])`, `r pull(brfss_2010[6,2])`, `r pull(brfss_2010[7,2])`, `r pull(brfss_2010[8,2])`, `r pull(brfss_2010[9,2])`, `r pull(brfss_2010[10,2])`, `r pull(brfss_2010[11,2])`, `r pull(brfss_2010[12,2])`, `r pull(brfss_2010[13,2])`, and `r pull(brfss_2010[14,2])`.
 
-```{r}
+```{r problem2_cont}
+
+#Construct a dataset that is limited to Excellent responses, and contains, year, state, and a variable that averages the data_value across locations within a state. Make a “spaghetti” plot of this average value over time within a state (that is, make a plot showing a line for each state across years – the geom_line geometry and group aesthetic will help).
+
+brfss_excellent = brfss_new %>%
+  transform(data_value = as.numeric(data_value))%>%
+    filter (response == 'excellent') %>%
+    group_by(locationabbr, year, response) %>%
+    summarize(mean_data = mean(data_value))
+
+brfss_excellent %>% 
+    ggplot(aes(x = year, y = mean_data, group = locationabbr, color = locationabbr)) + 
+    geom_point() + geom_line() +
+    labs(
+    title = "Average value over time by state",
+    x = "Year",
+    y = "Average Data Value"
+  )
 
 ```
 
