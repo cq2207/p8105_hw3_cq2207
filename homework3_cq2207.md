@@ -242,4 +242,82 @@ data was collected. The variable `weekend` indicates whether the day the
 data was collected was a weekend or not. The variable activity\_x, from
 `activity_1` to `activity_1440` represent the activity count for each
 minute of the day, starting at midnight. The dataset shows that this
-patient wearing the accelerometer used it for 5 weeks and 35 days.
+patient wearing the accelerometer used it for 5 weeks and 35
+days.
+
+``` r
+#Traditional analyses of accelerometer data focus on the total activity over the day. Using your tidied dataset, aggregate accross minutes to create a total activity variable for each day, and create a table showing these totals. Are any trends apparent?
+
+accel_total_activity = accel_new %>%
+  pivot_longer(activity_1:activity_1440, names_to = "minute", values_to = "activity_min") %>%
+  separate(minute, into = c(NA, "minute"), sep = "activity_") %>%
+  mutate(activity_min = as.numeric(activity_min),minute = as.numeric(minute), day_id = as.numeric(day_id)) %>%
+  group_by(day_id, day_of_week) %>%
+  summarize(activity_day = sum(activity_min)) %>%
+  arrange(day_id) 
+
+accel_total_activity %>% knitr::kable() %>% 
+    print()
+```
+
+    ## 
+    ## 
+    ##  day_id  day_of_week    activity_day
+    ## -------  ------------  -------------
+    ##       1  mon               480542.62
+    ##       2  tues               78828.07
+    ##       3  wed               376254.00
+    ##       4  thurs             631105.00
+    ##       5  fri               355923.64
+    ##       6  sat               307094.24
+    ##       7  sun               340115.01
+    ##       8  mon               568839.00
+    ##       9  tues              295431.00
+    ##      10  wed               607175.00
+    ##      11  thurs             422018.00
+    ##      12  fri               474048.00
+    ##      13  sat               423245.00
+    ##      14  sun               440962.00
+    ##      15  mon               467420.00
+    ##      16  tues              685910.00
+    ##      17  wed               382928.00
+    ##      18  thurs             467052.00
+    ##      19  fri               371230.00
+    ##      20  sat               381507.00
+    ##      21  sun               468869.00
+    ##      22  mon               154049.00
+    ##      23  tues              409450.00
+    ##      24  wed                 1440.00
+    ##      25  thurs             260617.00
+    ##      26  fri               340291.00
+    ##      27  sat               319568.00
+    ##      28  sun               434460.00
+    ##      29  mon               620860.00
+    ##      30  tues              389080.00
+    ##      31  wed                 1440.00
+    ##      32  thurs             138421.00
+    ##      33  fri               549658.00
+    ##      34  sat               367824.00
+    ##      35  sun               445366.00
+
+Based on the table, there are no apparent trends in the activity level
+of the patient per
+day.
+
+``` r
+#Accelerometer data allows the inspection activity over the course of the day. Make a single-panel plot that shows the 24-hour activity time courses for each day and use color to indicate day of the week. Describe in words any patterns or conclusions you can make based on this graph.
+
+accel_total_activity %>%
+    ggplot(aes(x = day_id, y = activity_day, color = day_of_week)) + 
+    geom_point() + geom_line() +
+    labs(
+    title = "Activity Time by Day",
+    x = "Day",
+    y = "Activity Time")
+```
+
+![](homework3_cq2207_files/figure-gfm/problem3_cont2-1.png)<!-- -->
+
+The graph shows that the patient’s weekend activity stayed somewhat
+stable and moderate throught out the entire testing period. The activity
+level varies by weekday, showing no apparent trends.

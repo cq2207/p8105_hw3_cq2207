@@ -169,3 +169,36 @@ accel_new = accel_data %>%
 The dataset `accel_new` has `r nrow(accel_new)` observations and `r ncol(accel_new)` variables. Variables include the `week` and `day_of_week` when the accelerometer data was collected. The variable `weekend` indicates whether the day the data was collected was a weekend or not. The variable activity_x, from `activity_1` to `activity_1440` represent the activity count for each minute of the day, starting at midnight. 
 The dataset shows that this patient wearing the accelerometer used it for `r pull(accel_new[35,1])` weeks and `r pull(accel_new[35,2])` days.
 
+```{r problem3_cont}
+
+#Traditional analyses of accelerometer data focus on the total activity over the day. Using your tidied dataset, aggregate accross minutes to create a total activity variable for each day, and create a table showing these totals. Are any trends apparent?
+
+accel_total_activity = accel_new %>%
+  pivot_longer(activity_1:activity_1440, names_to = "minute", values_to = "activity_min") %>%
+  separate(minute, into = c(NA, "minute"), sep = "activity_") %>%
+  mutate(activity_min = as.numeric(activity_min),minute = as.numeric(minute), day_id = as.numeric(day_id)) %>%
+  group_by(day_id, day_of_week) %>%
+  summarize(activity_day = sum(activity_min)) %>%
+  arrange(day_id) 
+
+accel_total_activity %>% knitr::kable() %>% 
+    print()
+
+```
+
+Based on the table, there are no apparent trends in the activity level of the patient per day.
+
+```{r problem3_cont2}
+
+#Accelerometer data allows the inspection activity over the course of the day. Make a single-panel plot that shows the 24-hour activity time courses for each day and use color to indicate day of the week. Describe in words any patterns or conclusions you can make based on this graph.
+
+accel_total_activity %>%
+    ggplot(aes(x = day_id, y = activity_day, color = day_of_week)) + 
+    geom_point() + geom_line() +
+    labs(
+    title = "Activity Time by Day",
+    x = "Day",
+    y = "Activity Time")
+```
+
+The graph shows that the patient's weekend activity stayed somewhat stable and moderate throught out the entire testing period. The activity level varies by weekday, showing no apparent trends.
