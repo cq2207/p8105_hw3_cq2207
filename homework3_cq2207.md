@@ -121,23 +121,44 @@ brfss_new = brfss_smart2010 %>%
     janitor::clean_names() %>%
     mutate_all(tolower) %>%
     filter (topic == "overall health") %>%
+    rename(`state` = locationabbr, `county` = locationdesc, `coordinates` = geo_location) %>%
     mutate(response = factor(response, labels = c("poor","fair","good","very good","excellent")))
-    
+  
+brfss_new 
+```
+
+    ## # A tibble: 10,625 x 23
+    ##    year  state county class topic question response sample_size data_value
+    ##    <chr> <chr> <chr>  <chr> <chr> <chr>    <fct>    <chr>       <chr>     
+    ##  1 2010  al    al - … heal… over… how is … poor     94          18.9      
+    ##  2 2010  al    al - … heal… over… how is … excelle… 148         30        
+    ##  3 2010  al    al - … heal… over… how is … good     208         33.1      
+    ##  4 2010  al    al - … heal… over… how is … fair     107         12.5      
+    ##  5 2010  al    al - … heal… over… how is … very go… 45          5.5       
+    ##  6 2010  al    al - … heal… over… how is … poor     91          15.6      
+    ##  7 2010  al    al - … heal… over… how is … excelle… 177         31.3      
+    ##  8 2010  al    al - … heal… over… how is … good     224         31.2      
+    ##  9 2010  al    al - … heal… over… how is … fair     120         15.5      
+    ## 10 2010  al    al - … heal… over… how is … very go… 66          6.4       
+    ## # … with 10,615 more rows, and 14 more variables:
+    ## #   confidence_limit_low <chr>, confidence_limit_high <chr>,
+    ## #   display_order <chr>, data_value_unit <chr>, data_value_type <chr>,
+    ## #   data_value_footnote_symbol <chr>, data_value_footnote <chr>,
+    ## #   data_source <chr>, class_id <chr>, topic_id <chr>, location_id <chr>,
+    ## #   question_id <chr>, respid <chr>, coordinates <chr>
+
+``` r
  #In 2002, which states were observed at 7 or more locations? What about in 2010?
 
 brfss_2002 = brfss_new %>%
-    group_by(year, locationabbr) %>%
-    summarize(n = n_distinct(geo_location)) %>%
+    group_by(year, state) %>%
+    summarize(n = n_distinct(coordinates)) %>%
     filter (n > 6, year == '2002')
 
-#In 2002, the states observed in 7 or more locations were CT, FL, MA, NC, NJ, PA
-
 brfss_2010 = brfss_new %>%
-    group_by(year, locationabbr) %>%
-    summarize(n = n_distinct(geo_location)) %>%
+    group_by(year, state) %>%
+    summarize(n = n_distinct(coordinates)) %>%
     filter (n > 6, year == '2010')
-    
- #In 2010, the states observed in 7 or more locations were CA, CO, FL, MA, MD, NC, NE, NJ, NY, OH, PA, SC, TX, WA 
 ```
 
 In 2002, there were 6 states that were observed in 7 or more locations:
@@ -152,11 +173,11 @@ wa.
 brfss_excellent = brfss_new %>%
   transform(data_value = as.numeric(data_value))%>%
     filter (response == 'excellent') %>%
-    group_by(locationabbr, year, response) %>%
+    group_by(state, year, response) %>%
     summarize(mean_data = mean(data_value))
 
 brfss_excellent %>% 
-    ggplot(aes(x = year, y = mean_data, group = locationabbr, color = locationabbr)) + 
+    ggplot(aes(x = year, y = mean_data, group = state, color = state)) + 
     geom_point() + geom_line() +
     labs(
     title = "Average value over time by state",
@@ -176,8 +197,8 @@ brfss_excellent %>%
 
 brfss_two = brfss_new %>%
     transform(data_value = as.numeric(data_value)) %>%
-    filter(locationabbr == 'ny',year == '2006' | year == '2010') %>%
-    select(locationabbr, year, response, data_value)
+    filter(state == 'ny',year == '2006' | year == '2010') %>%
+    select(state, year, response, data_value)
 
 brfss_two %>%
     ggplot(aes(x = response, y = data_value, color = response)) + 
@@ -194,10 +215,7 @@ brfss_two %>%
 ``` r
 #Load, tidy, and otherwise wrangle the data. Your final dataset should include all originally observed variables and values; have useful variable names; include a weekday vs weekend variable; and encode data with reasonable variable classes. Describe the resulting dataset (e.g. what variables exist, how many observations, etc).
 
-accel_data = 
-    read_csv("./data/accel_data.csv") %>%
-    janitor::clean_names() %>%
-    mutate_all(tolower)
+accel_data = read_csv("./data/accel_data.csv") 
 ```
 
     ## Parsed with column specification:
@@ -209,53 +227,19 @@ accel_data =
     ## See spec(...) for full column specifications.
 
 ``` r
-accel_data
+accel_new = accel_data %>%
+    janitor::clean_names() %>%
+    mutate_all(tolower) %>%
+    rename (`day_of_week` = day) %>%
+    mutate(day_of_week = factor(day_of_week, labels = c("mon","tues","wed","thurs","fri", "sat", "sun"))) %>%
+    mutate(weekend = if_else(day_of_week=="sun" | day_of_week == 'sat', "weekend", "weekday")) %>%
+    select(week, day_id, day_of_week, weekend, everything())
 ```
 
-    ## # A tibble: 35 x 1,443
-    ##    week  day_id day   activity_1 activity_2 activity_3 activity_4
-    ##    <chr> <chr>  <chr> <chr>      <chr>      <chr>      <chr>     
-    ##  1 1     1      frid… 88.377777… 82.244444… 64.444444… 70.044444…
-    ##  2 1     2      mond… 1          1          1          1         
-    ##  3 1     3      satu… 1          1          1          1         
-    ##  4 1     4      sund… 1          1          1          1         
-    ##  5 1     5      thur… 47.355555… 48.777777… 46.888888… 35.8      
-    ##  6 1     6      tues… 64.822222… 59.511111… 73.688888… 45.711111…
-    ##  7 1     7      wedn… 71.066666… 103.11111… 68.511111… 45.4      
-    ##  8 2     8      frid… 675        542        1010       779       
-    ##  9 2     9      mond… 291        335        393        335       
-    ## 10 2     10     satu… 64         11         1          1         
-    ## # … with 25 more rows, and 1,436 more variables: activity_5 <chr>,
-    ## #   activity_6 <chr>, activity_7 <chr>, activity_8 <chr>,
-    ## #   activity_9 <chr>, activity_10 <chr>, activity_11 <chr>,
-    ## #   activity_12 <chr>, activity_13 <chr>, activity_14 <chr>,
-    ## #   activity_15 <chr>, activity_16 <chr>, activity_17 <chr>,
-    ## #   activity_18 <chr>, activity_19 <chr>, activity_20 <chr>,
-    ## #   activity_21 <chr>, activity_22 <chr>, activity_23 <chr>,
-    ## #   activity_24 <chr>, activity_25 <chr>, activity_26 <chr>,
-    ## #   activity_27 <chr>, activity_28 <chr>, activity_29 <chr>,
-    ## #   activity_30 <chr>, activity_31 <chr>, activity_32 <chr>,
-    ## #   activity_33 <chr>, activity_34 <chr>, activity_35 <chr>,
-    ## #   activity_36 <chr>, activity_37 <chr>, activity_38 <chr>,
-    ## #   activity_39 <chr>, activity_40 <chr>, activity_41 <chr>,
-    ## #   activity_42 <chr>, activity_43 <chr>, activity_44 <chr>,
-    ## #   activity_45 <chr>, activity_46 <chr>, activity_47 <chr>,
-    ## #   activity_48 <chr>, activity_49 <chr>, activity_50 <chr>,
-    ## #   activity_51 <chr>, activity_52 <chr>, activity_53 <chr>,
-    ## #   activity_54 <chr>, activity_55 <chr>, activity_56 <chr>,
-    ## #   activity_57 <chr>, activity_58 <chr>, activity_59 <chr>,
-    ## #   activity_60 <chr>, activity_61 <chr>, activity_62 <chr>,
-    ## #   activity_63 <chr>, activity_64 <chr>, activity_65 <chr>,
-    ## #   activity_66 <chr>, activity_67 <chr>, activity_68 <chr>,
-    ## #   activity_69 <chr>, activity_70 <chr>, activity_71 <chr>,
-    ## #   activity_72 <chr>, activity_73 <chr>, activity_74 <chr>,
-    ## #   activity_75 <chr>, activity_76 <chr>, activity_77 <chr>,
-    ## #   activity_78 <chr>, activity_79 <chr>, activity_80 <chr>,
-    ## #   activity_81 <chr>, activity_82 <chr>, activity_83 <chr>,
-    ## #   activity_84 <chr>, activity_85 <chr>, activity_86 <chr>,
-    ## #   activity_87 <chr>, activity_88 <chr>, activity_89 <chr>,
-    ## #   activity_90 <chr>, activity_91 <chr>, activity_92 <chr>,
-    ## #   activity_93 <chr>, activity_94 <chr>, activity_95 <chr>,
-    ## #   activity_96 <chr>, activity_97 <chr>, activity_98 <chr>,
-    ## #   activity_99 <chr>, activity_100 <chr>, activity_101 <chr>,
-    ## #   activity_102 <chr>, activity_103 <chr>, activity_104 <chr>, …
+The dataset `accel_new` has 35 observations and 1444 variables.
+Variables include the `week` and `day_of_week` when the accelerometer
+data was collected. The variable `weekend` indicates whether the day the
+data was collected was a weekend or not. The variable activity\_x, from
+`activity_1` to `activity_1440` represent the activity count for each
+minute of the day, starting at midnight. The dataset shows that this
+patient wearing the accelerometer used it for 5 weeks and 35 days.
