@@ -89,7 +89,7 @@ data("brfss_smart2010")
 brfss_new = brfss_smart2010 %>% 
     janitor::clean_names() %>%
     mutate_all(tolower) %>%
-    filter (question == "how is your general health?") %>%
+    filter (topic == "overall health") %>%
     mutate(response = factor(response, labels = c("poor","fair","good","very good","excellent")))
     
  #In 2002, which states were observed at 7 or more locations? What about in 2010?
@@ -148,6 +148,19 @@ brfss_two %>%
     x = "Response",
     y = "Data Value")
     
+
+```
+
+```{r problem3}
+
+#Load, tidy, and otherwise wrangle the data. Your final dataset should include all originally observed variables and values; have useful variable names; include a weekday vs weekend variable; and encode data with reasonable variable classes. Describe the resulting dataset (e.g. what variables exist, how many observations, etc).
+
+accel_data = 
+    read_csv("./data/accel_data.csv") %>%
+    janitor::clean_names() %>%
+    mutate_all(tolower)
+accel_data
+
 
 ```
 

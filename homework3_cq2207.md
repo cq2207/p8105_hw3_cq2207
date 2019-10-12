@@ -120,7 +120,7 @@ data("brfss_smart2010")
 brfss_new = brfss_smart2010 %>% 
     janitor::clean_names() %>%
     mutate_all(tolower) %>%
-    filter (question == "how is your general health?") %>%
+    filter (topic == "overall health") %>%
     mutate(response = factor(response, labels = c("poor","fair","good","very good","excellent")))
     
  #In 2002, which states were observed at 7 or more locations? What about in 2010?
@@ -190,3 +190,72 @@ brfss_two %>%
 ```
 
 ![](homework3_cq2207_files/figure-gfm/problem2_cont-2.png)<!-- -->
+
+``` r
+#Load, tidy, and otherwise wrangle the data. Your final dataset should include all originally observed variables and values; have useful variable names; include a weekday vs weekend variable; and encode data with reasonable variable classes. Describe the resulting dataset (e.g. what variables exist, how many observations, etc).
+
+accel_data = 
+    read_csv("./data/accel_data.csv") %>%
+    janitor::clean_names() %>%
+    mutate_all(tolower)
+```
+
+    ## Parsed with column specification:
+    ## cols(
+    ##   .default = col_double(),
+    ##   day = col_character()
+    ## )
+
+    ## See spec(...) for full column specifications.
+
+``` r
+accel_data
+```
+
+    ## # A tibble: 35 x 1,443
+    ##    week  day_id day   activity_1 activity_2 activity_3 activity_4
+    ##    <chr> <chr>  <chr> <chr>      <chr>      <chr>      <chr>     
+    ##  1 1     1      frid… 88.377777… 82.244444… 64.444444… 70.044444…
+    ##  2 1     2      mond… 1          1          1          1         
+    ##  3 1     3      satu… 1          1          1          1         
+    ##  4 1     4      sund… 1          1          1          1         
+    ##  5 1     5      thur… 47.355555… 48.777777… 46.888888… 35.8      
+    ##  6 1     6      tues… 64.822222… 59.511111… 73.688888… 45.711111…
+    ##  7 1     7      wedn… 71.066666… 103.11111… 68.511111… 45.4      
+    ##  8 2     8      frid… 675        542        1010       779       
+    ##  9 2     9      mond… 291        335        393        335       
+    ## 10 2     10     satu… 64         11         1          1         
+    ## # … with 25 more rows, and 1,436 more variables: activity_5 <chr>,
+    ## #   activity_6 <chr>, activity_7 <chr>, activity_8 <chr>,
+    ## #   activity_9 <chr>, activity_10 <chr>, activity_11 <chr>,
+    ## #   activity_12 <chr>, activity_13 <chr>, activity_14 <chr>,
+    ## #   activity_15 <chr>, activity_16 <chr>, activity_17 <chr>,
+    ## #   activity_18 <chr>, activity_19 <chr>, activity_20 <chr>,
+    ## #   activity_21 <chr>, activity_22 <chr>, activity_23 <chr>,
+    ## #   activity_24 <chr>, activity_25 <chr>, activity_26 <chr>,
+    ## #   activity_27 <chr>, activity_28 <chr>, activity_29 <chr>,
+    ## #   activity_30 <chr>, activity_31 <chr>, activity_32 <chr>,
+    ## #   activity_33 <chr>, activity_34 <chr>, activity_35 <chr>,
+    ## #   activity_36 <chr>, activity_37 <chr>, activity_38 <chr>,
+    ## #   activity_39 <chr>, activity_40 <chr>, activity_41 <chr>,
+    ## #   activity_42 <chr>, activity_43 <chr>, activity_44 <chr>,
+    ## #   activity_45 <chr>, activity_46 <chr>, activity_47 <chr>,
+    ## #   activity_48 <chr>, activity_49 <chr>, activity_50 <chr>,
+    ## #   activity_51 <chr>, activity_52 <chr>, activity_53 <chr>,
+    ## #   activity_54 <chr>, activity_55 <chr>, activity_56 <chr>,
+    ## #   activity_57 <chr>, activity_58 <chr>, activity_59 <chr>,
+    ## #   activity_60 <chr>, activity_61 <chr>, activity_62 <chr>,
+    ## #   activity_63 <chr>, activity_64 <chr>, activity_65 <chr>,
+    ## #   activity_66 <chr>, activity_67 <chr>, activity_68 <chr>,
+    ## #   activity_69 <chr>, activity_70 <chr>, activity_71 <chr>,
+    ## #   activity_72 <chr>, activity_73 <chr>, activity_74 <chr>,
+    ## #   activity_75 <chr>, activity_76 <chr>, activity_77 <chr>,
+    ## #   activity_78 <chr>, activity_79 <chr>, activity_80 <chr>,
+    ## #   activity_81 <chr>, activity_82 <chr>, activity_83 <chr>,
+    ## #   activity_84 <chr>, activity_85 <chr>, activity_86 <chr>,
+    ## #   activity_87 <chr>, activity_88 <chr>, activity_89 <chr>,
+    ## #   activity_90 <chr>, activity_91 <chr>, activity_92 <chr>,
+    ## #   activity_93 <chr>, activity_94 <chr>, activity_95 <chr>,
+    ## #   activity_96 <chr>, activity_97 <chr>, activity_98 <chr>,
+    ## #   activity_99 <chr>, activity_100 <chr>, activity_101 <chr>,
+    ## #   activity_102 <chr>, activity_103 <chr>, activity_104 <chr>, …
