@@ -16,16 +16,16 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(dplyr)
 library(ggplot2)
-library(viridis)
-library(ggridges) 
 
 
 library(p8105.datasets)
 data("instacart")
 
+instacart
+
 
 ```
-The dataset `Instacart` contains `r nrow(instacart)` observations and `r ncol(instacart)` variables. Variables describe details of the order and of the products ordered.
+The dataset `Instacart` contains `r nrow(instacart)` observations and `r ncol(instacart)` variables. Variables describe details of the order and of the products ordered. An example would be `user_id` #42756, who ordered on `order_dow` 6 (friday), at 16 hours `product_name` Green Peas from `aisle_id` 116, `aisle` Frozen Produce.
 
 ```{r problem1_cont}
 

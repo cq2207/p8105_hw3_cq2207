@@ -7,44 +7,52 @@ Carolina Q Cardoso
 library(tidyverse)
 ```
 
-    ## ── Attaching packages ─────────────────────────────────────── tidyverse 1.2.1 ──
+    ## ── Attaching packages ──────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
 
     ## ✔ ggplot2 3.2.1     ✔ purrr   0.3.2
     ## ✔ tibble  2.1.3     ✔ dplyr   0.8.3
     ## ✔ tidyr   1.0.0     ✔ stringr 1.4.0
     ## ✔ readr   1.3.1     ✔ forcats 0.4.0
 
-    ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ── Conflicts ─────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
     ## ✖ dplyr::filter() masks stats::filter()
     ## ✖ dplyr::lag()    masks stats::lag()
 
 ``` r
 library(dplyr)
 library(ggplot2)
-library(viridis)
-```
 
-    ## Loading required package: viridisLite
 
-``` r
-library(ggridges) 
-```
-
-    ## 
-    ## Attaching package: 'ggridges'
-
-    ## The following object is masked from 'package:ggplot2':
-    ## 
-    ##     scale_discrete_manual
-
-``` r
 library(p8105.datasets)
 data("instacart")
+
+instacart
 ```
 
+    ## # A tibble: 1,384,617 x 15
+    ##    order_id product_id add_to_cart_ord… reordered user_id eval_set
+    ##       <int>      <int>            <int>     <int>   <int> <chr>   
+    ##  1        1      49302                1         1  112108 train   
+    ##  2        1      11109                2         1  112108 train   
+    ##  3        1      10246                3         0  112108 train   
+    ##  4        1      49683                4         0  112108 train   
+    ##  5        1      43633                5         1  112108 train   
+    ##  6        1      13176                6         0  112108 train   
+    ##  7        1      47209                7         0  112108 train   
+    ##  8        1      22035                8         1  112108 train   
+    ##  9       36      39612                1         0   79431 train   
+    ## 10       36      19660                2         1   79431 train   
+    ## # … with 1,384,607 more rows, and 9 more variables: order_number <int>,
+    ## #   order_dow <int>, order_hour_of_day <int>,
+    ## #   days_since_prior_order <int>, product_name <chr>, aisle_id <int>,
+    ## #   department_id <int>, aisle <chr>, department <chr>
+
 The dataset `Instacart` contains 1384617 observations and 15 variables.
-Variables describe details of the order and of the products
-ordered.
+Variables describe details of the order and of the products ordered. An
+example would be `user_id` \#42756, who ordered on `order_dow` 6
+(friday), at 16 hours `product_name` Green Peas from `aisle_id` 116,
+`aisle` Frozen
+Produce.
 
 ``` r
 #How many aisles are there, and which aisles are the most items ordered from?
