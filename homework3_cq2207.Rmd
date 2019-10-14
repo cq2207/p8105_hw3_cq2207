@@ -11,9 +11,14 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r problem1}
 
+
+
 library(tidyverse)
 library(dplyr)
 library(ggplot2)
+library(viridis)
+library(ggridges) 
+
 
 library(p8105.datasets)
 data("instacart")
@@ -91,7 +96,8 @@ brfss_new = brfss_smart2010 %>%
     mutate_all(tolower) %>%
     filter (topic == "overall health") %>%
     rename(`state` = locationabbr, `county` = locationdesc, `coordinates` = geo_location) %>%
-    mutate(response = factor(response, labels = c("poor","fair","good","very good","excellent")))
+    mutate(response = forcats::fct_relevel(response, c("poor","fair","good","very good","excellent")))
+
   
 brfss_new 
 
@@ -158,11 +164,12 @@ accel_data = read_csv("./data/accel_data.csv")
 
 accel_new = accel_data %>%
     janitor::clean_names() %>%
-    mutate_all(tolower) %>%
+    mutate(day = str_to_lower(day)) %>%
+    mutate_if(is.numeric, round, digits = 2) %>%
     rename (`day_of_week` = day) %>%
-    mutate(day_of_week = factor(day_of_week, labels = c("mon","tues","wed","thurs","fri", "sat", "sun"))) %>%
     mutate(weekend = if_else(day_of_week=="sun" | day_of_week == 'sat', "weekend", "weekday")) %>%
-    select(week, day_id, day_of_week, weekend, everything())
+    mutate(day_of_week = forcats::fct_relevel(day_of_week, c("mon","tues","wed","thurs","fri", "sat", "sun"))) %>%
+    select(week, day_id, day_of_week, weekend, everything()) 
 
 ```
 

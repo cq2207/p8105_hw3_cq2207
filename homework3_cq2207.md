@@ -7,21 +7,37 @@ Carolina Q Cardoso
 library(tidyverse)
 ```
 
-    ## ── Attaching packages ──────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
+    ## ── Attaching packages ─────────────────────────────────────── tidyverse 1.2.1 ──
 
     ## ✔ ggplot2 3.2.1     ✔ purrr   0.3.2
     ## ✔ tibble  2.1.3     ✔ dplyr   0.8.3
     ## ✔ tidyr   1.0.0     ✔ stringr 1.4.0
     ## ✔ readr   1.3.1     ✔ forcats 0.4.0
 
-    ## ── Conflicts ─────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
     ## ✖ dplyr::filter() masks stats::filter()
     ## ✖ dplyr::lag()    masks stats::lag()
 
 ``` r
 library(dplyr)
 library(ggplot2)
+library(viridis)
+```
 
+    ## Loading required package: viridisLite
+
+``` r
+library(ggridges) 
+```
+
+    ## 
+    ## Attaching package: 'ggridges'
+
+    ## The following object is masked from 'package:ggplot2':
+    ## 
+    ##     scale_discrete_manual
+
+``` r
 library(p8105.datasets)
 data("instacart")
 ```
@@ -122,7 +138,8 @@ brfss_new = brfss_smart2010 %>%
     mutate_all(tolower) %>%
     filter (topic == "overall health") %>%
     rename(`state` = locationabbr, `county` = locationdesc, `coordinates` = geo_location) %>%
-    mutate(response = factor(response, labels = c("poor","fair","good","very good","excellent")))
+    mutate(response = forcats::fct_relevel(response, c("poor","fair","good","very good","excellent")))
+
   
 brfss_new 
 ```
@@ -130,16 +147,16 @@ brfss_new
     ## # A tibble: 10,625 x 23
     ##    year  state county class topic question response sample_size data_value
     ##    <chr> <chr> <chr>  <chr> <chr> <chr>    <fct>    <chr>       <chr>     
-    ##  1 2010  al    al - … heal… over… how is … poor     94          18.9      
-    ##  2 2010  al    al - … heal… over… how is … excelle… 148         30        
+    ##  1 2010  al    al - … heal… over… how is … excelle… 94          18.9      
+    ##  2 2010  al    al - … heal… over… how is … very go… 148         30        
     ##  3 2010  al    al - … heal… over… how is … good     208         33.1      
     ##  4 2010  al    al - … heal… over… how is … fair     107         12.5      
-    ##  5 2010  al    al - … heal… over… how is … very go… 45          5.5       
-    ##  6 2010  al    al - … heal… over… how is … poor     91          15.6      
-    ##  7 2010  al    al - … heal… over… how is … excelle… 177         31.3      
+    ##  5 2010  al    al - … heal… over… how is … poor     45          5.5       
+    ##  6 2010  al    al - … heal… over… how is … excelle… 91          15.6      
+    ##  7 2010  al    al - … heal… over… how is … very go… 177         31.3      
     ##  8 2010  al    al - … heal… over… how is … good     224         31.2      
     ##  9 2010  al    al - … heal… over… how is … fair     120         15.5      
-    ## 10 2010  al    al - … heal… over… how is … very go… 66          6.4       
+    ## 10 2010  al    al - … heal… over… how is … poor     66          6.4       
     ## # … with 10,615 more rows, and 14 more variables:
     ## #   confidence_limit_low <chr>, confidence_limit_high <chr>,
     ## #   display_order <chr>, data_value_unit <chr>, data_value_type <chr>,
@@ -186,9 +203,9 @@ brfss_excellent %>%
   )
 ```
 
-    ## Warning: Removed 6 rows containing missing values (geom_point).
+    ## Warning: Removed 4 rows containing missing values (geom_point).
 
-    ## Warning: Removed 2 rows containing missing values (geom_path).
+    ## Warning: Removed 3 rows containing missing values (geom_path).
 
 ![](homework3_cq2207_files/figure-gfm/problem2_cont-1.png)<!-- -->
 
@@ -229,12 +246,15 @@ accel_data = read_csv("./data/accel_data.csv")
 ``` r
 accel_new = accel_data %>%
     janitor::clean_names() %>%
-    mutate_all(tolower) %>%
+    mutate(day = str_to_lower(day)) %>%
+    mutate_if(is.numeric, round, digits = 2) %>%
     rename (`day_of_week` = day) %>%
-    mutate(day_of_week = factor(day_of_week, labels = c("mon","tues","wed","thurs","fri", "sat", "sun"))) %>%
     mutate(weekend = if_else(day_of_week=="sun" | day_of_week == 'sat', "weekend", "weekday")) %>%
-    select(week, day_id, day_of_week, weekend, everything())
+    mutate(day_of_week = forcats::fct_relevel(day_of_week, c("mon","tues","wed","thurs","fri", "sat", "sun"))) %>%
+    select(week, day_id, day_of_week, weekend, everything()) 
 ```
+
+    ## Warning: Unknown levels in `f`: mon, tues, wed, thurs, fri, sat, sun
 
 The dataset `accel_new` has 35 observations and 1444 variables.
 Variables include the `week` and `day_of_week` when the accelerometer
@@ -264,41 +284,41 @@ accel_total_activity %>% knitr::kable() %>%
     ## 
     ##  day_id  day_of_week    activity_day
     ## -------  ------------  -------------
-    ##       1  mon               480542.62
-    ##       2  tues               78828.07
-    ##       3  wed               376254.00
-    ##       4  thurs             631105.00
-    ##       5  fri               355923.64
-    ##       6  sat               307094.24
-    ##       7  sun               340115.01
-    ##       8  mon               568839.00
-    ##       9  tues              295431.00
-    ##      10  wed               607175.00
-    ##      11  thurs             422018.00
-    ##      12  fri               474048.00
-    ##      13  sat               423245.00
-    ##      14  sun               440962.00
-    ##      15  mon               467420.00
-    ##      16  tues              685910.00
-    ##      17  wed               382928.00
-    ##      18  thurs             467052.00
-    ##      19  fri               371230.00
-    ##      20  sat               381507.00
-    ##      21  sun               468869.00
-    ##      22  mon               154049.00
-    ##      23  tues              409450.00
-    ##      24  wed                 1440.00
-    ##      25  thurs             260617.00
-    ##      26  fri               340291.00
-    ##      27  sat               319568.00
-    ##      28  sun               434460.00
-    ##      29  mon               620860.00
-    ##      30  tues              389080.00
-    ##      31  wed                 1440.00
-    ##      32  thurs             138421.00
-    ##      33  fri               549658.00
-    ##      34  sat               367824.00
-    ##      35  sun               445366.00
+    ##       1  friday            480542.61
+    ##       2  monday             78828.18
+    ##       3  saturday          376254.00
+    ##       4  sunday            631105.00
+    ##       5  thursday          355923.72
+    ##       6  tuesday           307094.19
+    ##       7  wednesday         340115.01
+    ##       8  friday            568839.00
+    ##       9  monday            295431.00
+    ##      10  saturday          607175.00
+    ##      11  sunday            422018.00
+    ##      12  thursday          474048.00
+    ##      13  tuesday           423245.00
+    ##      14  wednesday         440962.00
+    ##      15  friday            467420.00
+    ##      16  monday            685910.00
+    ##      17  saturday          382928.00
+    ##      18  sunday            467052.00
+    ##      19  thursday          371230.00
+    ##      20  tuesday           381507.00
+    ##      21  wednesday         468869.00
+    ##      22  friday            154049.00
+    ##      23  monday            409450.00
+    ##      24  saturday            1440.00
+    ##      25  sunday            260617.00
+    ##      26  thursday          340291.00
+    ##      27  tuesday           319568.00
+    ##      28  wednesday         434460.00
+    ##      29  friday            620860.00
+    ##      30  monday            389080.00
+    ##      31  saturday            1440.00
+    ##      32  sunday            138421.00
+    ##      33  thursday          549658.00
+    ##      34  tuesday           367824.00
+    ##      35  wednesday         445366.00
 
 Based on the table, there are no apparent trends in the activity level
 of the patient per
